@@ -1,24 +1,22 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container-fluid">
-
-    <div class="card shadow mb-4">
-        <div class="card-body">
-
-            <h3 class="mb-4">Data Pegawai</h3>
-
-            <a href="{{ route('pegawai.create') }}" class="btn btn-primary mb-3">
-                Tambah Data
-            </a>
+        <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Data Pegawai</h3>
+                </div>
+                <div class="card-body">
+                    <a href="{{ route('pegawai.create') }}" class="btn btn-primary mb-3">Tambah Data</a>
 
             @if (session('success'))
                 <div class="alert alert-success">{{ session('success') }}</div>
             @endif
 
             <div class="table-responsive">
-                <table class="table table-bordered" width="100%" cellspacing="0">
-                    <thead class="text-center">
+                <table class="table table-bordered table-hover">
+                    <thead>
                         <tr>
                             <th>Foto</th>
                             <th>NIP</th>
@@ -29,7 +27,6 @@
                             <th width="160px">Aksi</th>
                         </tr>
                     </thead>
-
                     <tbody>
                         @forelse ($pegawai as $p)
                         <tr>
@@ -62,10 +59,8 @@
                                       onsubmit="return confirm('Yakin ingin menghapus data ini?')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" 
-                                            class="btn btn-danger btn-sm">
-                                        HAPUS
-                                    </button>
+                                    <button type="submit" class="btn btn-sm btn-danger">HAPUS</button>
+                                   
                                 </form>
                             </td>
                         </tr>

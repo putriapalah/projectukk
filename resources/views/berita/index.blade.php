@@ -1,11 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2>Berita BPN</h2>
-        <a href="{{ route('berita.create') }}" class="btn btn-primary">Tambah Berita</a>
-    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Berita BPN</h3>
+                </div>
+                <div class="card-body">
+                    <a href="{{ route('berita.create') }}" class="btn btn-primary mb-3">Tambah Berita</a>
 
     @if (session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -13,7 +17,7 @@
 
     <div class="card">
         <div class="card-body">
-            <table class="table table-hover">
+            <table class="table table-bordered table-hover">
                 <thead>
                     <tr>
                         <th>Foto</th>
@@ -29,7 +33,6 @@
                     @forelse($berita as $b)
                         <tr>
 
-                            {{-- FOTO --}}
                             <td>
                                 @if($b->foto)
                                     <img src="{{ asset('img/berita/' . $b->foto) }}" 
@@ -38,32 +41,16 @@
                                     <span class="text-muted">Tidak ada foto</span>
                                 @endif
                             </td>
-
-                            {{-- JUDUL --}}
                             <td>{{ $b->judul }}</td>
-
-                            {{-- ISI (dibatasi biar tidak panjang) --}}
-                            <td>{!! Str::limit(strip_tags($b->isi), 50, '...') !!}</td>
-
-                            {{-- TANGGAL --}}
+                            <td>{{ $b->isi }}</td>
                             <td>{{ \Carbon\Carbon::parse($b->tanggal_publikasi)->format('d M Y') }}</td>
-
-                            {{-- STATUS --}}
                             <td>
-                                <span class="badge bg-{{ $b->status == 'terbit' ? 'success' : 'warning' }}">
-                                    {{ ucfirst($b->status) }}
-                                </span>
-                            </td>
-
-                            {{-- AKSI --}}
-                            <td>
-                                <a href="{{ route('berita.edit', $b) }}" class="btn btn-sm btn-outline-primary">Edit</a>
-
+                                <a href="{{ route('berita.edit', $b) }}" class="btn btn-sm btn-warning">Edit</a>
                                 <form action="{{ route('berita.destroy', $b) }}" 
                                       method="POST" class="d-inline">
                                     @csrf 
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-outline-danger"
+                                    <button type="submit" class="btn btn-sm btn-danger"
                                         onclick="return confirm('Hapus berita ini?')">Hapus</button>
                                 </form>
                             </td>

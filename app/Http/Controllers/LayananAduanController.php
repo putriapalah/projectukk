@@ -27,6 +27,7 @@ class LayananAduanController extends Controller
             'nama_pemohon' => $request->nama_pemohon,
             'nomor_telepon_pemohon' => $request->nomor_telepon_pemohon,
             'deskripsi_aduan' => $request->deskripsi_aduan,
+            'status' => 'Menunggu',
         ]);
 
         return back()->with('success', 'Aduan berhasil dikirim.');
