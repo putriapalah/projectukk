@@ -12,16 +12,10 @@ class LayananAduan extends Model
     protected $table = 'layanan_aduan';
 
     protected $fillable = [
-        'user_id',            
         'nama_pemohon',
         'nomor_telepon_pemohon',
         'deskripsi_aduan',
         'status',
     ];
-
-    // Relasi ke User
-    public function user()
-    {
-        return $this->belongsTo(User::class);
     }
-}
+

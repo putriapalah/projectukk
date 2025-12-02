@@ -18,11 +18,6 @@
             </select>
         </div>
 
-        <div class="mb-3">
-            <label>Catatan Admin</label>
-            <textarea name="catatan_admin" class="form-control">{{ $aduan->catatan_admin }}</textarea>
-        </div>
-
         <button class="btn btn-primary" type="submit">Simpan Perubahan</button>
     </form>
 

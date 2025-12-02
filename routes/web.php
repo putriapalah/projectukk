@@ -21,27 +21,22 @@ use App\Http\Controllers\LandingPageController;
 
 
 
-/// LOGIN & LOGOUT
-
 Route::get('/login', [SessionController::class, 'index'])->name('login');
 Route::post('/login', [SessionController::class, 'login'])->name('login.submit');
 Route::post('/logout', [SessionController::class, 'logout'])->name('logout');
 
 
-/// DASHBOARD ADMIN
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
 });
 
-
-/// LANDING PAGE — **PERBAIKAN PENTING**
 Route::get('/', [LandingPageController::class, 'index'])->name('landing');
 
 
 
-/// RESOURCE ROUTES
+
 Route::resource('bukuTanah', BukuTanahController::class);
 Route::resource('suratUkur', SuratUkurController::class);
 

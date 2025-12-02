@@ -8,34 +8,37 @@ use Illuminate\Support\Facades\Schema;
 
 class SuratUkurController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request)
     {
+        // Tambahkan pencarian
+        $search = $request->input('search');
 
-        if (! Schema::hasTable('suratUkur')) {
-            return view('suratUkur.index', ['suratUkur' => collect()])->with('error', 'Tabel surat_ukur belum ada. Jalankan: php artisan migrate');
+        if (!Schema::hasTable('suratUkur')) {
+            return view('suratUkur.index', ['suratUkur' => collect()])
+                ->with('error', 'Tabel surat_ukur belum ada. Jalankan: php artisan migrate');
         }
 
-        $suratUkur = SuratUkur::latest()->get();
-        return view('suratUkur.index', compact('suratUkur'));
+        $suratUkur = SuratUkur::when($search, function ($query) use ($search) {
+            return $query->where('kodeBT', 'like', "%{$search}%")
+                ->orWhere('nama_kecamatan', 'like', "%{$search}%")
+                ->orWhere('namaDesa', 'like', "%{$search}%")
+                ->orWhere('jenis_hak', 'like', "%{$search}%")
+                ->orWhere('lokasi_penyimpanan', 'like', "%{$search}%");
+        })
+            ->latest()
+            ->get();
+
+        return view('suratUkur.index', compact('suratUkur', 'search'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('suratUkur.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        if (! Schema::hasTable('suratUkur')) {
+        if (!Schema::hasTable('suratUkur')) {
             return redirect()->route('suratUkur.index')
                 ->with('error', 'Tabel surat_ukur belum ada. Jalankan: php artisan migrate');
         }
@@ -49,26 +52,18 @@ class SuratUkurController extends Controller
         ]);
 
         $suratUkur = new SuratUkur();
-        $data = array_intersect_key($validated, array_flip($suratUkur->getFillable()));
-
-        $suratUkur->fill($data)->save();
+        $suratUkur->fill($validated)->save();
 
         return redirect()->route('suratUkur.index')
             ->with('success', 'Data surat ukur berhasil ditambahkan.');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show($kodeBT)
     {
         $suratUkur = SuratUkur::where('kodeBT', $kodeBT)->firstOrFail();
         return view('suratUkur.show', compact('suratUkur'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit($kodeBT)
     {
         $suratUkur = SuratUkur::where('kodeBT', $kodeBT)->firstOrFail();
@@ -77,7 +72,7 @@ class SuratUkurController extends Controller
 
     public function update(Request $request, $kodeBT)
     {
-        if (! Schema::hasTable('suratUkur')) {
+        if (!Schema::hasTable('suratUkur')) {
             return redirect()->route('suratUkur.index')
                 ->with('error', 'Tabel surat_ukur belum ada. Jalankan: php artisan migrate');
         }
@@ -92,33 +87,18 @@ class SuratUkurController extends Controller
             'lokasi_penyimpanan' => 'nullable|string|max:255',
         ]);
 
-        $columns = Schema::getColumnListing('suratUkur');
-        $data = array_intersect_key($validated, array_flip($columns));
+        $suratUkur->update($validated);
 
-        try {
-            $suratUkur->update($data);
-            return redirect()->route('suratUkur.index')
-                ->with('success', 'Data berhasil diperbarui!');
-        } catch (\Exception $e) {
-            return back()->withInput()->with('error', 'Gagal memperbarui data: ' . $e->getMessage());
-        }
+        return redirect()->route('suratUkur.index')
+            ->with('success', 'Data berhasil diperbarui!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($kodeBT)
     {
         $suratUkur = SuratUkur::where('kodeBT', $kodeBT)->firstOrFail();
-
-        $deleted = $suratUkur->delete();
-
-        if ($deleted) {
-            return redirect()->route('suratUkur.index')
-                ->with('success', 'Data Surat Ukur berhasil dihapus.');
-        }
+        $suratUkur->delete();
 
         return redirect()->route('suratUkur.index')
-            ->with('error', 'Gagal menghapus data. Silakan coba lagi.');
+            ->with('success', 'Data Surat Ukur berhasil dihapus.');
     }
 }

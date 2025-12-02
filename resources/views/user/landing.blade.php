@@ -33,7 +33,14 @@
             </a>
 
             <div class="d-lg-none ms-auto me-3">
-                <a class="btn custom-btn custom-border-btn" data-bs-toggle="offcanvas" href="#offcanvasLogin">Login</a>
+                @auth
+                    <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                        @csrf
+                        <button type="submit" class="btn custom-btn custom-border-btn">Logout</button>
+                    </form>
+                @else
+                    <a class="btn custom-btn custom-border-btn" data-bs-toggle="offcanvas" href="#offcanvasLogin">Login</a>
+                @endauth
             </div>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -51,7 +58,14 @@
                 </ul>
 
                 <div class="d-none d-lg-block ms-lg-3">
-                    <a class="btn custom-btn custom-border-btn" data-bs-toggle="offcanvas" href="#offcanvasLogin">Login</a>
+                    @auth
+                        <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                            @csrf
+                            <button type="submit" class="btn custom-btn custom-border-btn">Logout</button>
+                        </form>
+                    @else
+                        <a class="btn custom-btn custom-border-btn" data-bs-toggle="offcanvas" href="#offcanvasLogin">Login</a>
+                    @endauth
                 </div>
             </div>
         </div>
@@ -60,7 +74,7 @@
     <!-- LOGIN SIDEBAR -->
     <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="offcanvasLogin">
         <div class="offcanvas-header">
-            <h5 class="offcanvas-title">Login Admin</h5>
+            <h5 class="offcanvas-title">Login</h5>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
         </div>
 
@@ -83,13 +97,6 @@
                     </div>
                 </div>
             </form>
-
-            <div class="mt-auto mb-5">
-                <p>
-                    <strong class="text-white me-3">Pertanyaan?</strong>
-                    <a href="tel: 0265-123456" class="contact-link">0265-123456</a>
-                </p>
-            </div>
         </div>
 
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="#3D405B" fill-opacity="1" d="M0,224L34.3,192C68.6,160,137,96,206,90.7C274.3,85,343,139,411,144C480,149,549,107,617,122.7C685.7,139,754,213,823,240C891.4,267,960,245,1029,224C1097.1,203,1166,181,1234,160C1302.9,139,1371,117,1406,106.7L1440,96L1440,320L1405.7,320C1371.4,320,1303,320,1234,320C1165.7,320,1097,320,1029,320C960,320,891,320,823,320C754.3,320,686,320,617,320C548.6,320,480,320,411,320C342.9,320,274,320,206,320C137.1,320,69,320,34,320L0,320Z"></path></svg>
@@ -107,7 +114,7 @@
                     <h2 class="text-white">Selamat Datang di</h2>
 
                     <h1 class="cd-headline rotate-1 text-white mb-4 pb-2">
-                        <span>BPN adalah</span>
+                        <span>BPN</span>
                         <span class="cd-words-wrapper">
                             <b class="is-visible">Transparan</b>
                             <b>Profesional</b>
@@ -122,9 +129,7 @@
                 </div>
 
                 <div class="col-lg-6 col-12">
-                    <div class="ratio ratio-16x9">
-                        <iframe src="https://youtu.be/n2fQWn8ultE?si=Avrg_LwNm2NTeb3b" title="Video BPN" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                    </div>
+                    
                 </div>
             </div>
         </div>
@@ -152,7 +157,7 @@
         </div>
     </section>
 
-    <!-- DATA SECTION WITH TABS -->
+    <!-- DATA SECTION  -->
     <section class="membership-section section-padding section-bg" id="section_3">
         <div class="container">
             <div class="row">
@@ -179,6 +184,23 @@
                     <div class="tab-content">
                         <!-- BUKU TANAH TAB -->
                         <div class="tab-pane fade show active" id="buku-tanah">
+                            <!-- Form Search Buku Tanah -->
+                            <form action="{{ url('/') }}" method="GET" class="mb-4">
+                                <div class="input-group">
+                                    <input type="text" name="search_buku_tanah" class="form-control" 
+                                        placeholder="Cari berdasarkan Kode BT, Kecamatan, Desa, Jenis Hak, atau Lokasi..." 
+                                        value="{{ $searchBukuTanah ?? '' }}">
+                                    <button class="btn btn-primary" type="submit">
+                                        <i class="bi-search me-1"></i>Cari
+                                    </button>
+                                    @if(isset($searchBukuTanah) && $searchBukuTanah != '')
+                                        <a href="{{ url('/') }}#section_3" class="btn btn-secondary">
+                                            <i class="bi-x-circle me-1"></i>Reset
+                                        </a>
+                                    @endif
+                                </div>
+                            </form>
+
                             <div class="table-responsive">
                                 <table class="table table-bordered table-striped text-center">
                                     <thead class="table-dark">
@@ -203,7 +225,13 @@
                                         </tr>
                                         @empty
                                         <tr>
-                                            <td colspan="6" class="text-muted">Belum ada data Buku Tanah</td>
+                                            <td colspan="6" class="text-muted">
+                                                @if(isset($searchBukuTanah) && $searchBukuTanah != '')
+                                                    Tidak ada data yang sesuai dengan pencarian "{{ $searchBukuTanah }}"
+                                                @else
+                                                    Belum ada data Buku Tanah
+                                                @endif
+                                            </td>
                                         </tr>
                                         @endforelse
                                     </tbody>
@@ -213,12 +241,29 @@
 
                         <!-- SURAT UKUR TAB -->
                         <div class="tab-pane fade" id="surat-ukur">
+                            <!-- Form Search Surat Ukur -->
+                            <form action="{{ url('/') }}" method="GET" class="mb-4">
+                                <div class="input-group">
+                                    <input type="text" name="search_surat_ukur" class="form-control" 
+                                        placeholder="Cari berdasarkan Kode BT, Kecamatan, Desa, Jenis Hak, atau Lokasi..." 
+                                        value="{{ $searchSuratUkur ?? '' }}">
+                                    <button class="btn btn-primary" type="submit">
+                                        <i class="bi-search me-1"></i>Cari
+                                    </button>
+                                    @if(isset($searchSuratUkur) && $searchSuratUkur != '')
+                                        <a href="{{ url('/') }}#section_3" class="btn btn-secondary">
+                                            <i class="bi-x-circle me-1"></i>Reset
+                                        </a>
+                                    @endif
+                                </div>
+                            </form>
+
                             <div class="table-responsive">
                                 <table class="table table-bordered table-striped text-center">
                                     <thead class="table-dark">
                                         <tr>
                                             <th>No</th>
-                                            <th>Kode SU</th>
+                                            <th>Kode BT</th>
                                             <th>Kecamatan</th>
                                             <th>Desa</th>
                                             <th>Jenis Hak</th>
@@ -237,7 +282,13 @@
                                         </tr>
                                         @empty
                                         <tr>
-                                            <td colspan="6" class="text-muted">Belum ada data Surat Ukur</td>
+                                            <td colspan="6" class="text-muted">
+                                                @if(isset($searchSuratUkur) && $searchSuratUkur != '')
+                                                    Tidak ada data yang sesuai dengan pencarian "{{ $searchSuratUkur }}"
+                                                @else
+                                                    Belum ada data Surat Ukur
+                                                @endif
+                                            </td>
                                         </tr>
                                         @endforelse
                                     </tbody>
@@ -323,80 +374,104 @@
         </div>
     </section>
 
-    <!-- LAYANAN ADUAN SECTION -->
-    <section class="contact-section section-padding" id="section_6">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12 col-12 text-center mb-5">
-                    <h2>Layanan Aduan Masyarakat</h2>
+<!-- LAYANAN ADUAN SECTION -->
+<section class="contact-section section-padding" id="section_6">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-12 text-center mb-5">
+                <h2>Layanan Aduan Masyarakat</h2>
+            </div>
+
+            <div class="col-lg-6 col-12 mb-5 mb-lg-0">
+                {{-- ALERT NOTIFIKASI --}}
+                @if (session('success'))
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <strong><i class="bi-check-circle-fill me-2"></i>Berhasil!</strong> {{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                @endif
+
+                @if (session('error'))
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong><i class="bi-exclamation-triangle-fill me-2"></i>Error!</strong> {{ session('error') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                @endif
+
+                @if ($errors->any())
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong><i class="bi-exclamation-triangle-fill me-2"></i>Terjadi Kesalahan!</strong>
+                        <ul class="mb-0 mt-2">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                @endif
+
+                <form class="custom-form contact-form" action="{{ route('aduan.user.store') }}" method="POST" id="formAduan">
+                    @csrf
+                    <h4 class="mb-4 pb-2">Sampaikan Aduan Anda</h4>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-floating mb-4">
+                                <input type="text" name="nama_pemohon" class="form-control" placeholder="Nama Lengkap" value="{{ old('nama_pemohon') }}" required>
+                                <label>Nama Lengkap</label>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="form-floating mb-4">
+                                <input type="text" name="nomor_telepon_pemohon" class="form-control" placeholder="Nomor Telepon" value="{{ old('nomor_telepon_pemohon') }}" required>
+                                <label>Nomor Telepon</label>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="form-floating mb-4">
+                                <textarea name="deskripsi_aduan" class="form-control" placeholder="Deskripsi Aduan" style="height: 120px" required>{{ old('deskripsi_aduan') }}</textarea>
+                                <label>Deskripsi Aduan</label>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <button type="submit" class="form-control">Kirim Aduan</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="col-lg-5 col-12 ms-auto">
+                <div class="contact-info">
+                    <h4 class="mb-4">Informasi Kontak</h4>
+                    
+                    <p class="mb-2">
+                        <a href="tel: 0265-123456" class="contact-link">
+                            <i class="bi-telephone me-2"></i>
+                            (0265) 123-456
+                        </a>
+                    </p>
+
+                    <div class="col-lg-12 col-12 mt-4">
+                        <ul class="social-icon mt-lg-5 mt-3 mb-4">
+                            <li class="social-icon-item">
+                                <a href="#" class="social-icon-link bi-instagram"></a>
+                            </li>
+                            <li class="social-icon-item">
+                                <a href="#" class="social-icon-link bi-twitter"></a>
+                            </li>
+                            <li class="social-icon-item">
+                                <a href="#" class="social-icon-link bi-whatsapp"></a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-
-                <div class="col-lg-6 col-12 mb-5 mb-lg-0">
-                    <form class="custom-form contact-form" action="{{ route('aduan.user.store') }}" method="POST">
-                        @csrf
-                        <h4 class="mb-4 pb-2">Sampaikan Aduan Anda</h4>
-
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="form-floating mb-4">
-                                    <input type="text" name="nama_pemohon" class="form-control" placeholder="Nama Lengkap" required>
-                                    <label>Nama Lengkap</label>
-                                </div>
-                            </div>
-
-                            <div class="col-12">
-                                <div class="form-floating mb-4">
-                                    <input type="text" name="nomor_telepon_pemohon" class="form-control" placeholder="Nomor Telepon" required>
-                                    <label>Nomor Telepon</label>
-                                </div>
-                            </div>
-
-                            <div class="col-12">
-                                <div class="form-floating mb-4">
-                                    <textarea name="deskripsi_aduan" class="form-control" placeholder="Deskripsi Aduan" style="height: 120px" required></textarea>
-                                    <label>Deskripsi Aduan</label>
-                                </div>
-                            </div>
-
-                            <div class="col-12">
-                                <button type="submit" class="form-control">Kirim Aduan</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="col-lg-5 col-12 ms-auto">
-                    <div class="contact-info">
-                        <h4 class="mb-4">Informasi Kontak</h4>
-                        
-            
-
-                                <p class="mb-2">
-                                    <a href="tel: 0265-123456" class="contact-link">
-                                        <i class="bi-telephone me-2"></i>
-                                        (0265) 123-456
-                                    </a>
-                                </p>
-
-                                <div class="col-lg-2 col-12 ms-auto">
-                                    <ul class="social-icon mt-lg-5 mt-3 mb-4">
-                                        <li class="social-icon-item">
-                                            <a href="#" class="social-icon-link bi-instagram"></a>
-                                        </li>
-                                        <li class="social-icon-item">
-                                            <a href="#" class="social-icon-link bi-twitter"></a>
-                                        </li>
-                                        <li class="social-icon-item">
-                                            <a href="#" class="social-icon-link bi-whatsapp"></a>
-                                        </li>
-                                    </ul>
-                                    <p class="copyright-text">Admin: <a href="{{ route('login') }}"><strong>Login</strong></a></p>
-                                </div>
-
-                            </div>
-                        </div>
-
-                        </div>
+            </div>
+        </div>
+    </div>
+</section>
 
 </main>
 
@@ -414,12 +489,9 @@
                 </a>
             </div>
 
-            
-                
-                <p class="copyright-text">Copyright © 2024 BPN Indonesia</p>
+            <div class="col-lg-6 col-12">
+                <p class="copyright-text">Copyright © 2025 BPN</p>
             </div>
-
-            
         </div>
     </div>
 
@@ -436,4 +508,3 @@
 <script src="{{ asset('user/js/custom.js') }}"></script>
 
 </body>
-</html>

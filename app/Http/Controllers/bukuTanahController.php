@@ -4,14 +4,26 @@ namespace App\Http\Controllers;
 
 use App\Models\BukuTanah;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Schema;
 
 class BukuTanahController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $bukuTanah = BukuTanah::latest()->get();
-        return view('bukuTanah.index', compact('bukuTanah'));
+        // AMBIL QUERY SEARCH
+        $search = $request->input('search');
+
+        // JIKA ADA SEARCH → FILTER | JIKA KOSONG → TAMPIL SEMUA
+        $bukuTanah = BukuTanah::when($search, function ($query) use ($search) {
+            $query->where('kodeBT', 'like', "%{$search}%")
+                ->orWhere('nama_kecamatan', 'like', "%{$search}%")
+                ->orWhere('namaDesa', 'like', "%{$search}%")
+                ->orWhere('jenis_hak', 'like', "%{$search}%")
+                ->orWhere('lokasi_penyimpanan', 'like', "%{$search}%");
+        })
+            ->latest()
+            ->get();
+
+        return view('bukuTanah.index', compact('bukuTanah', 'search'));
     }
 
     public function create()
@@ -21,7 +33,6 @@ class BukuTanahController extends Controller
 
     public function store(Request $request)
     {
-
         $validate = $request->validate([
             'kodeBT' => 'required|string|max:255|unique:bukutanah,kodeBT',
             'nama_kecamatan' => 'required|string|max:255',
@@ -34,9 +45,6 @@ class BukuTanahController extends Controller
 
         return redirect()->route('bukuTanah.index')
             ->with('success', 'Data buku tanah berhasil ditambahkan.');
-
-
-            
     }
 
     public function show($kodeBT)
@@ -53,7 +61,6 @@ class BukuTanahController extends Controller
 
     public function update(Request $request, $kodeBT)
     {
-
         $bukuTanah = BukuTanah::where('kodeBT', $kodeBT)->firstOrFail();
 
         $validated = $request->validate([
@@ -73,7 +80,6 @@ class BukuTanahController extends Controller
     public function destroy($kodeBT)
     {
         $bukuTanah = BukuTanah::where('kodeBT', $kodeBT)->firstOrFail();
-
         $bukuTanah->delete();
 
         return redirect()->route('bukuTanah.index')
